@@ -2,7 +2,7 @@
 
 Apply these **3 edits** to your website file. I verified the element IDs against your uploaded `curatrax_html.txt`, so these line up with your code (including your tweaks). Make a backup copy of the HTML first.
 
-After deploying the backend (see `README.md`), you'll have a URL like `https://curatrax-backend.onrender.com`. Use it in Edit 1.
+After deploying the Worker (see `README-CLOUDFLARE.md`), you'll have a URL like `https://curatrax-worker.YOUR-SUBDOMAIN.workers.dev`. Use it in Edit 1.
 
 ---
 
@@ -17,7 +17,7 @@ In the main `<script>` block, right **after** this helper line:
 add:
 
 ```javascript
-  var API_BASE = "https://curatrax-backend.onrender.com"; // <-- replace with YOUR deployed backend URL (no trailing slash)
+  var API_BASE = "https://curatrax-worker.YOUR-SUBDOMAIN.workers.dev"; // <-- replace with YOUR deployed backend URL (no trailing slash)
 ```
 
 (One declaration, used by both the demo form and the waitlist below.)
@@ -150,4 +150,4 @@ Find the `Credentialing waitlist` block and replace the **whole block** with:
 3. The button shows "Sending…", then your "Request received" screen appears.
 4. `info@stelliteworks.com` and `support@curatrax.com` get the lead; the visitor gets a confirmation.
 
-If the success screen never appears, open browser dev tools → **Network** tab → submit again → click the `/api/demo` request to see the error (most often a CORS origin mismatch or a Zoho auth issue — both covered in `README.md` troubleshooting).
+If the success screen never appears, open browser dev tools → **Network** tab → submit again → click the `/api/demo` request to see the error (most often a CORS origin mismatch or a Zoho auth issue — both covered in `README-CLOUDFLARE.md` troubleshooting).

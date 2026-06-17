@@ -1,7 +1,0 @@
-# Never commit secrets or installed packages
-.env
-node_modules/
-
-# Misc
-*.log
-.DS_Store

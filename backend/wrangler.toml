@@ -1,0 +1,21 @@
+# Cloudflare Worker config.
+# ONLY needed if you deploy with the command-line tool (Wrangler).
+# If you deploy by pasting worker.js into the Cloudflare dashboard, you can ignore this file.
+
+name = "curatrax-worker"
+main = "worker.js"
+compatibility_date = "2026-06-01"
+
+# Non-secret settings. Adjust as needed.
+[vars]
+ZEPTO_ENDPOINT   = "https://api.zeptomail.com"   # use "https://api.zeptomail.in" if your ZeptoMail account is on the India data center
+MAIL_FROM_ADDRESS = "info@stelliteworks.com"     # must be on a domain VERIFIED in ZeptoMail
+MAIL_FROM_NAME    = "CuraTrax"
+TEAM_TO           = "info@stelliteworks.com,support@curatrax.com"
+ALLOWED_ORIGINS   = "https://curatrax.com,https://www.curatrax.com"
+AUTOREPLY         = "true"
+BRAND_NAME        = "CuraTrax"
+
+# ZEPTO_TOKEN is a SECRET. Never put it in this file (it gets committed to git).
+# Set it once from the command line with:
+#   npx wrangler secret put ZEPTO_TOKEN
