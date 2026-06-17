@@ -15,7 +15,7 @@
  *   ZEPTO_ENDPOINT     (var)    https://api.zeptomail.com  (use https://api.zeptomail.in for India DC)
  *   MAIL_FROM_ADDRESS  (var)    info@stelliteworks.com  (must be on a domain verified in ZeptoMail)
  *   MAIL_FROM_NAME     (var)    CuraTrax
- *   TEAM_TO            (var)    info@stelliteworks.com,support@curatrax.com
+ *   TEAM_TO            (var)    services@stelliteworks.com
  *   ALLOWED_ORIGINS    (var)    https://curatrax.com,https://www.curatrax.com   (or *)
  *   AUTOREPLY          (var)    true | false
  *   BRAND_NAME         (var)    CuraTrax
@@ -89,7 +89,7 @@ function clamp(v, max) {
 }
 
 function teamList(env) {
-  return (env.TEAM_TO || 'info@stelliteworks.com,support@curatrax.com')
+  return (env.TEAM_TO || 'services@stelliteworks.com')
     .split(',').map(s => s.trim()).filter(Boolean);
 }
 

@@ -43,7 +43,7 @@ The easy path is the dashboard — no command line, no git needed.
    | `ZEPTO_ENDPOINT` | `https://api.zeptomail.in` (or `.com` — see the data-center note) |
    | `MAIL_FROM_ADDRESS` | `info@stelliteworks.com` (must be your verified domain) |
    | `MAIL_FROM_NAME` | `CuraTrax` |
-   | `TEAM_TO` | `info@stelliteworks.com,support@curatrax.com` |
+   | `TEAM_TO` | `services@stelliteworks.com` |
    | `ALLOWED_ORIGINS` | `https://curatrax.com,https://www.curatrax.com` |
    | `AUTOREPLY` | `true` |
    | `BRAND_NAME` | `CuraTrax` |
@@ -77,7 +77,7 @@ Then push your site the way you normally do so AWS picks it up. (These edits are
 
 ## Part D — Test
 
-Open your live site, fill the demo form, and submit. The button shows "Sending…", then your "Request received" screen. Within a few seconds, `info@stelliteworks.com` and `support@curatrax.com` get the lead, and the test address gets a confirmation.
+Open your live site, fill the demo form, and submit. The button shows "Sending…", then your "Request received" screen. Within a few seconds, `services@stelliteworks.com` gets the lead, and the test address gets a confirmation.
 
 To watch it happen live, open your Worker in the Cloudflare dashboard → **Logs** (or run `npx wrangler tail`) and submit the form — you'll see each request and any error in real time.
 

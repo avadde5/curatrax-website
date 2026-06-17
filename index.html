@@ -171,6 +171,10 @@ img.logo-light{display:none}
 .hub::before{content:"";position:absolute;inset:-13px;border-radius:50%;border:1px solid var(--cyan-line);opacity:.45;animation:ringpulse 3.2s ease-out infinite}
 @keyframes ringpulse{0%{transform:scale(.92);opacity:.5}70%{transform:scale(1.1);opacity:0}100%{transform:scale(1.1);opacity:0}}
 .hub img{display:block;height:29px;width:auto;margin:0 auto 9px}
+/* show only the theme-appropriate logo inside the hub */
+.hub img.logo-light{display:none}
+[data-theme="light"] .hub img.logo-dark{display:none}
+[data-theme="light"] .hub img.logo-light{display:block}
 .hub b{display:block;font:800 .98rem var(--font-d);letter-spacing:.04em}
 .hub small{font:400 .74rem var(--font-b);color:var(--muted)}
 .mod{position:absolute;background:var(--glass);backdrop-filter:blur(16px);border:1px solid var(--line);border-radius:var(--r-md);padding:15px 17px;box-shadow:var(--shadow-1);transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;cursor:default}
@@ -731,7 +735,7 @@ img.logo-light{display:none}
       </div>
       <div class="band-ctas">
         <a class="btn btn-primary mag" href="#demo">Book a demo</a>
-        <a class="btn btn-ghost" href="mailto:info@stelliteworks.com">Request consultation</a>
+        <a class="btn btn-ghost" href="mailto:services@stelliteworks.com">Request consultation</a>
       </div>
     </div>
   </div>
@@ -884,7 +888,7 @@ img.logo-light{display:none}
       </div>
       <div class="band-ctas">
         <a class="btn btn-primary mag" href="#demo">Schedule demo</a>
-        <a class="btn btn-ghost" href="mailto:info@stelliteworks.com">Contact sales</a>
+        <a class="btn btn-ghost" href="mailto:services@stelliteworks.com">Contact sales</a>
       </div>
     </div>
   </div>
@@ -1068,9 +1072,10 @@ img.logo-light{display:none}
             <option selected>Full platform</option>
           </select>
         </div>
+        <input type="text" id="cx_hp" name="company_website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
         <button class="btn btn-primary mag" id="demoSubmit" type="button">Book my demo
           <svg class="ico" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
-        <p class="form-fine">Prefer email? Reach us at <a href="mailto:info@stelliteworks.com">info@stelliteworks.com</a></p>
+        <p class="form-fine">Prefer email? Reach us at <a href="mailto:services@stelliteworks.com">services@stelliteworks.com</a></p>
       </div>
       <div class="form-ok">
         <span class="ok-ring"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
@@ -1101,7 +1106,7 @@ img.logo-light{display:none}
         <span class="f-h">CONTACT</span>
         <div class="addr"><b>UNITED STATES</b>691 N Squirrel road, Suite LL 160a<br>Auburn Hills, Michigan, USA 48326<br><a href="tel:+12488122100">+1 (248) 812 2100</a></div>
         <div class="addr"><b>INDIA</b>Unit 1, #504D, 5th Floor, PSR Prime Tower<br>Gachibowli, Hyderabad, 500032<br><a href="tel:+13132219365">+1 (313) 221 9365</a><br><a href="tel:+919700439452">+91 97004 39452</a></div>
-        <div class="addr"><b>EMAIL</b><a href="mailto:info@stelliteworks.com">info@stelliteworks.com</a><br><a href="mailto:support@curatrax.com">support@curatrax.com</a></div>
+        <div class="addr"><b>EMAIL</b><a href="mailto:services@stelliteworks.com">services@stelliteworks.com</a><br><a href="mailto:support@curatrax.com">support@curatrax.com</a></div>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;align-content:start">
         <div class="f-col">
@@ -1133,6 +1138,9 @@ img.logo-light{display:none}
   var reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   function $(s,c){return (c||doc).querySelector(s)}
   function $$(s,c){return Array.prototype.slice.call((c||doc).querySelectorAll(s))}
+
+  // Backend endpoint — replace with your deployed Cloudflare Worker URL (no trailing slash):
+  var API_BASE = "https://curatrax-worker.YOUR-SUBDOMAIN.workers.dev";
 
   /* ---------- Theme toggle (in-memory only) ---------- */
   var themeBtn=$('#themeBtn');
@@ -1315,7 +1323,24 @@ img.logo-light{display:none}
         return;
       }
       wEmail.style.borderColor='';
-      if(wForm.parentElement) wForm.parentElement.classList.add('waited');
+
+      var original=wBtn.innerHTML;
+      wBtn.disabled=true; wBtn.style.opacity='.7'; wBtn.textContent='Joining…';
+
+      fetch(API_BASE+'/api/waitlist',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email:v})
+      })
+      .then(function(r){ return r.json().catch(function(){return {};}).then(function(j){ return {ok:r.ok&&j&&j.ok}; }); })
+      .then(function(res){
+        if(res.ok){ if(wForm.parentElement) wForm.parentElement.classList.add('waited'); }
+        else { throw new Error(); }
+      })
+      .catch(function(){
+        wBtn.disabled=false; wBtn.style.opacity=''; wBtn.innerHTML=original;
+        alert("Sorry — couldn't add you just now. Please email services@stelliteworks.com.");
+      });
     });
     wEmail.addEventListener('input',function(){ wEmail.style.borderColor=''; });
   }
@@ -1334,7 +1359,35 @@ img.logo-light{display:none}
         f.style.borderColor=bad?'#F87171':'';
         if(bad) ok=false;
       });
-      if(ok) dCard.classList.add('sent');
+      if(!ok) return;
+
+      var hp=doc.getElementById('cx_hp');
+      var roleEl=doc.getElementById('dRole');
+      var payload={
+        name:(doc.getElementById('dName')||{}).value.trim(),
+        email:(doc.getElementById('dEmail')||{}).value.trim(),
+        org:(doc.getElementById('dOrg')||{}).value.trim(),
+        interest:roleEl?roleEl.value:'',
+        company_website:hp?hp.value:''
+      };
+
+      var original=dBtn.innerHTML;
+      dBtn.disabled=true; dBtn.style.opacity='.7'; dBtn.textContent='Sending…';
+
+      fetch(API_BASE+'/api/demo',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      })
+      .then(function(r){ return r.json().catch(function(){return {};}).then(function(j){ return {ok:r.ok&&j&&j.ok}; }); })
+      .then(function(res){
+        if(res.ok){ dCard.classList.add('sent'); }
+        else { throw new Error(); }
+      })
+      .catch(function(){
+        dBtn.disabled=false; dBtn.style.opacity=''; dBtn.innerHTML=original;
+        alert("Sorry — something went wrong sending your request. Please email services@stelliteworks.com and we'll get right back to you.");
+      });
     });
     fields.forEach(function(id){
       var f=doc.getElementById(id);
